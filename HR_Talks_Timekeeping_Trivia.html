@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HR Talks — Timekeeping Trivia Showdown</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    @keyframes pulseGlow {
+      0%,100% { box-shadow: 0 0 20px rgba(255,71,87,0.4), 0 0 40px rgba(255,71,87,0.2); }
+      50%     { box-shadow: 0 0 40px rgba(255,71,87,0.9), 0 0 80px rgba(255,71,87,0.5); }
+    }
+    @keyframes heartbeat {
+      0%,100% { transform: scale(1); }
+      25%     { transform: scale(1.15); }
+      50%     { transform: scale(1); }
+      75%     { transform: scale(1.10); }
+    }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%     { transform: translateX(-8px); }
+      40%     { transform: translateX(8px); }
+      60%     { transform: translateX(-6px); }
+      80%     { transform: translateX(6px); }
+    }
+    @keyframes flashRed {
+      0%,100% { background-color: transparent; }
+      50%     { background-color: rgba(255,71,87,0.15); }
+    }
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50%     { transform: translateY(-6px); }
+    }
+    @keyframes neonFlicker {
+      0%,100% { opacity: 1; text-shadow: 0 0 8px #ffd700, 0 0 16px #ffd700, 0 0 24px #ff6b00; }
+      50%     { opacity: 0.85; text-shadow: 0 0 4px #ffd700, 0 0 8px #ffd700; }
+    }
+    @keyframes gradientShift {
+      0%,100% { background-position: 0% 50%; }
+      50%     { background-position: 100% 50%; }
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0a0a23 0%, #1a0033 30%, #2d0a1f 60%, #4a0e26 100%);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    body.pressure-mode { animation: gradientShift 4s ease infinite, flashRed 0.6s ease infinite; }
+
+    .container {
+      background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
+      border: 2px solid #ffd700;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 40px rgba(255,215,0,0.15);
+      width: 100%;
+      max-width: 720px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #c30010 0%, #8b0000 50%, #4a0e26 100%);
+      color: #fff;
+      padding: 28px 32px 22px;
+      text-align: center;
+      border-bottom: 3px solid #ffd700;
+      position: relative;
+    }
+    .header::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, #ffd700, #ff6b00, #ffd700);
+      animation: gradientShift 3s linear infinite;
+      background-size: 200% 100%;
+    }
+    .header .badge {
+      display: inline-block;
+      background: rgba(255,215,0,0.2);
+      border: 1px solid #ffd700;
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      color: #ffd700;
+      font-weight: 700;
+    }
+    .header h1 {
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      animation: neonFlicker 2.5s ease-in-out infinite;
+      color: #ffd700;
+    }
+    .header p { font-size: 13px; opacity: 0.9; color: #fff; }
+
+    .progress-wrap { padding: 16px 32px 0; }
+    .progress-info {
+      display: flex; justify-content: space-between;
+      font-size: 13px; color: #ffd700; margin-bottom: 6px;
+      font-weight: 600;
+    }
+    .progress-bar-bg { background: #0a0a23; border: 1px solid #333; border-radius: 8px; height: 10px; overflow: hidden; }
+    .progress-bar-fill {
+      background: linear-gradient(90deg, #ffd700, #ff6b00, #c30010);
+      height: 100%; border-radius: 8px;
+      transition: width 0.4s ease;
+      box-shadow: 0 0 10px rgba(255,107,0,0.7);
+    }
+
+    .timer-wrap {
+      padding: 14px 32px 0;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .timer-icon { font-size: 22px; }
+    .timer-icon.urgent { animation: heartbeat 0.5s ease-in-out infinite; }
+    .timer-bar-bg { flex: 1; background: #0a0a23; border: 1px solid #333; border-radius: 8px; height: 14px; overflow: hidden; }
+    .timer-bar-fill {
+      height: 100%; border-radius: 8px;
+      background: #00d97e;
+      transition: width 0.9s linear, background 0.3s;
+      box-shadow: 0 0 10px rgba(0,217,126,0.6);
+    }
+    .timer-count {
+      font-size: 22px; font-weight: 800; color: #fff;
+      min-width: 36px; text-align: right;
+      font-family: 'Courier New', monospace;
+    }
+    .timer-count.urgent {
+      color: #ff4757;
+      animation: heartbeat 0.5s ease-in-out infinite;
+      text-shadow: 0 0 15px #ff4757;
+    }
+
+    .question-area { padding: 26px 32px 12px; }
+    .question-number {
+      font-size: 11px; color: #ffd700; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px;
+    }
+    .question-text {
+      font-size: 19px; font-weight: 600; color: #fff;
+      line-height: 1.5; min-height: 60px;
+    }
+
+    .choices { padding: 8px 32px 24px; display: flex; flex-direction: column; gap: 11px; }
+    .choice-btn {
+      background: linear-gradient(135deg, #1f2444 0%, #2a3050 100%);
+      border: 2px solid #3a4060;
+      border-radius: 12px;
+      padding: 14px 18px;
+      font-size: 15px;
+      color: #fff;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.18s;
+      display: flex; align-items: center; gap: 12px;
+      font-family: inherit;
+    }
+    .choice-btn:hover:not(:disabled) {
+      border-color: #ffd700;
+      background: linear-gradient(135deg, #2a3050 0%, #3a4070 100%);
+      transform: translateX(6px);
+      box-shadow: 0 4px 16px rgba(255,215,0,0.3);
+    }
+    .choice-letter {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: #3a4060; color: #ffd700;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 800; flex-shrink: 0;
+      transition: background 0.2s;
+      border: 1px solid #555;
+    }
+    .choice-btn.correct {
+      border-color: #00d97e;
+      background: linear-gradient(135deg, rgba(0,217,126,0.25), rgba(0,217,126,0.10));
+      box-shadow: 0 0 20px rgba(0,217,126,0.5);
+    }
+    .choice-btn.correct .choice-letter { background: #00d97e; color: #fff; }
+    .choice-btn.wrong {
+      border-color: #ff4757;
+      background: linear-gradient(135deg, rgba(255,71,87,0.25), rgba(255,71,87,0.10));
+      animation: shake 0.4s ease;
+    }
+    .choice-btn.wrong .choice-letter { background: #ff4757; color: #fff; }
+    .choice-btn:disabled { cursor: default; transform: none; }
+
+    .feedback {
+      margin: 0 32px 18px; padding: 14px 16px; border-radius: 10px;
+      font-size: 14px; font-weight: 600; display: none;
+      align-items: flex-start; gap: 10px; line-height: 1.5;
+    }
+    .feedback.correct {
+      background: rgba(0,217,126,0.15); color: #00d97e;
+      border-left: 4px solid #00d97e;
+    }
+    .feedback.wrong {
+      background: rgba(255,71,87,0.15); color: #ff8a95;
+      border-left: 4px solid #ff4757;
+    }
+
+    .next-wrap { padding: 0 32px 24px; display: none; justify-content: flex-end; }
+    .next-btn {
+      background: linear-gradient(135deg, #ffd700, #ff6b00);
+      color: #1a0033;
+      border: none; border-radius: 10px;
+      padding: 12px 32px; font-size: 15px;
+      font-weight: 800; cursor: pointer;
+      transition: all 0.2s;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      box-shadow: 0 4px 14px rgba(255,107,0,0.4);
+    }
+    .next-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,107,0,0.7); }
+
+    .score-strip {
+      background: #0a0a23;
+      padding: 12px 32px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: #fff;
+      border-top: 2px solid #ffd700;
+      font-weight: 600;
+    }
+    .score-strip span b { color: #ffd700; font-size: 15px; }
+
+    /* SCREENS */
+    .screen { display: none; }
+    .screen.active { display: block; }
+    #quiz-screen { display: none; }
+    #quiz-screen.active { display: block; }
+
+    /* START SCREEN */
+    #start-screen { padding: 42px 32px; text-align: center; }
+    .start-icon {
+      font-size: 64px; margin-bottom: 12px;
+      animation: float 2.5s ease-in-out infinite;
+    }
+    #start-screen h2 {
+      font-size: 30px; font-weight: 800;
+      color: #ffd700;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      text-shadow: 0 0 20px rgba(255,215,0,0.5);
+    }
+    #start-screen .subtitle {
+      color: #ff6b00; font-size: 14px; font-weight: 700;
+      letter-spacing: 2px; margin-bottom: 16px; text-transform: uppercase;
+    }
+    #start-screen p.intro {
+      color: #ccc; font-size: 14px; line-height: 1.7;
+      margin-bottom: 22px; max-width: 480px; margin-left: auto; margin-right: auto;
+    }
+
+    .start-stats { display: flex; justify-content: center; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+    .stat-box {
+      background: linear-gradient(135deg, #1f2444, #2a3050);
+      border: 1px solid #ffd700;
+      border-radius: 12px; padding: 14px 20px; text-align: center;
+      min-width: 110px;
+    }
+    .stat-box .num { font-size: 26px; font-weight: 800; color: #ffd700; }
+    .stat-box .lbl { font-size: 11px; color: #ccc; margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
+
+    .pressure-note {
+      background: rgba(255,71,87,0.1);
+      border: 1px dashed #ff4757;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: #ff8a95;
+      margin-bottom: 22px;
+      font-weight: 600;
+    }
+
+    .name-input-wrap { margin-bottom: 22px; }
+    .name-input-wrap label {
+      display: block; font-size: 13px; font-weight: 700;
+      color: #ffd700; margin-bottom: 8px;
+      text-transform: uppercase; letter-spacing: 1px;
+    }
+    .name-input-wrap input {
+      width: 100%; padding: 14px 18px;
+      background: #0a0a23;
+      border: 2px solid #3a4060;
+      border-radius: 10px;
+      font-size: 16px; color: #fff;
+      outline: none; transition: all 0.2s; text-align: center;
+      font-weight: 600;
+    }
+    .name-input-wrap input:focus {
+      border-color: #ffd700;
+      box-shadow: 0 0 15px rgba(255,215,0,0.3);
+    }
+    .name-input-wrap input::placeholder { color: #555; }
+
+    .start-btn {
+      background: linear-gradient(135deg, #ffd700, #ff6b00, #c30010);
+      background-size: 200% 100%;
+      animation: gradientShift 3s linear infinite;
+      color: #1a0033;
+      border: none; border-radius: 12px;
+      padding: 16px 48px; font-size: 16px;
+      font-weight: 900; cursor: pointer;
+      transition: all 0.2s;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-right: 10px;
+      box-shadow: 0 6px 20px rgba(255,107,0,0.4);
+    }
+    .start-btn:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 10px 30px rgba(255,107,0,0.7);
+    }
+    .leaderboard-btn {
+      background: transparent;
+      color: #ffd700;
+      border: 2px solid #ffd700;
+      border-radius: 12px;
+      padding: 14px 24px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .leaderboard-btn:hover { background: rgba(255,215,0,0.1); box-shadow: 0 0 15px rgba(255,215,0,0.4); }
+
+    /* RESULT SCREEN */
+    #result-screen { padding: 38px 32px; text-align: center; }
+    .result-icon { font-size: 68px; margin-bottom: 14px; animation: float 2.5s ease-in-out infinite; }
+    #result-screen h2 {
+      font-size: 30px; color: #ffd700; margin-bottom: 8px;
+      font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px;
+      text-shadow: 0 0 20px rgba(255,215,0,0.5);
+    }
+    .result-sub { font-size: 15px; color: #ccc; margin-bottom: 24px; }
+
+    .score-display {
+      background: linear-gradient(135deg, #c30010 0%, #8b0000 50%, #4a0e26 100%);
+      border: 2px solid #ffd700;
+      border-radius: 16px;
+      color: white; padding: 26px; margin-bottom: 22px;
+      display: flex; align-items: center; justify-content: center; gap: 28px;
+      box-shadow: 0 0 30px rgba(255,215,0,0.25);
+    }
+    .score-display .big-num   { font-size: 58px; font-weight: 900; line-height: 1; color: #ffd700; }
+    .score-display .big-denom { font-size: 20px; opacity: 0.85; margin-top: 8px; color: #fff; }
+    .score-display .big-pct   {
+      font-size: 38px; font-weight: 800;
+      border-left: 2px solid rgba(255,215,0,0.5);
+      padding-left: 30px;
+      color: #fff;
+    }
+
+    .result-breakdown { display: flex; justify-content: center; gap: 14px; margin-bottom: 20px; }
+    .breakdown-box {
+      border-radius: 10px; padding: 14px 22px;
+      text-align: center; flex: 1;
+      border: 1px solid;
+    }
+    .breakdown-box.correct-box {
+      background: rgba(0,217,126,0.12); color: #00d97e;
+      border-color: #00d97e;
+    }
+    .breakdown-box.wrong-box {
+      background: rgba(255,71,87,0.12); color: #ff8a95;
+      border-color: #ff4757;
+    }
+    .breakdown-box .b-num { font-size: 28px; font-weight: 900; }
+    .breakdown-box .b-lbl { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+
+    .grade-bar { background: #0a0a23; border: 1px solid #333; border-radius: 20px; height: 16px; overflow: hidden; margin-bottom: 10px; }
+    .grade-bar-fill {
+      height: 100%; border-radius: 20px;
+      background: linear-gradient(90deg, #ffd700, #ff6b00, #c30010);
+      transition: width 1.2s ease;
+      box-shadow: 0 0 12px rgba(255,107,0,0.7);
+    }
+    .grade-label {
+      font-size: 15px; font-weight: 800; color: #ffd700;
+      margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;
+    }
+    .result-msg { font-size: 14px; color: #ccc; margin-bottom: 24px; line-height: 1.7; }
+
+    .result-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .restart-btn {
+      background: linear-gradient(135deg, #ffd700, #ff6b00);
+      color: #1a0033;
+      border: none; border-radius: 12px;
+      padding: 14px 32px; font-size: 14px;
+      font-weight: 900; cursor: pointer;
+      transition: all 0.2s;
+      text-transform: uppercase; letter-spacing: 1px;
+      box-shadow: 0 4px 16px rgba(255,107,0,0.4);
+    }
+    .restart-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255,107,0,0.7); }
+    .view-lb-btn {
+      background: transparent; color: #ffd700;
+      border: 2px solid #ffd700; border-radius: 12px;
+      padding: 12px 24px; font-size: 14px;
+      font-weight: 700; cursor: pointer;
+      transition: all 0.2s;
+      text-transform: uppercase; letter-spacing: 1px;
+    }
+    .view-lb-btn:hover { background: rgba(255,215,0,0.1); }
+
+    /* LEADERBOARD SCREEN */
+    #leaderboard-screen { padding: 38px 32px; }
+    #leaderboard-screen h2 {
+      font-size: 26px; color: #ffd700; margin-bottom: 6px;
+      text-align: center; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 1.5px;
+      text-shadow: 0 0 20px rgba(255,215,0,0.5);
+    }
+    .lb-sub { font-size: 13px; color: #999; margin-bottom: 22px; text-align: center; }
+
+    .lb-loading { text-align: center; padding: 40px 20px; color: #999; }
+    .spinner {
+      width: 38px; height: 38px;
+      border: 4px solid #333; border-top-color: #ffd700;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 12px;
+    }
+
+    .lb-no-url {
+      background: rgba(255,215,0,0.08);
+      border: 2px dashed #ffd700;
+      border-radius: 12px;
+      padding: 20px; text-align: center;
+      font-size: 13px; color: #ccc; margin-bottom: 20px;
+      line-height: 1.6;
+    }
+    .lb-no-url strong { display: block; font-size: 14px; margin-bottom: 8px; color: #ffd700; text-transform: uppercase; letter-spacing: 1px; }
+    .lb-no-url code { background: #0a0a23; padding: 2px 6px; border-radius: 4px; color: #ff6b00; }
+
+    .lb-table-wrap { overflow-x: auto; margin-bottom: 22px; border-radius: 12px; border: 1px solid #3a4060; }
+    table.lb-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .lb-table thead tr {
+      background: linear-gradient(135deg, #c30010, #8b0000);
+      color: #ffd700;
+    }
+    .lb-table th {
+      padding: 12px 14px; text-align: left;
+      font-weight: 800; font-size: 12px;
+      text-transform: uppercase; letter-spacing: 1px;
+    }
+    .lb-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #2a3050;
+      color: #eee; vertical-align: middle;
+      background: #1a1a2e;
+    }
+    .lb-table tbody tr:hover td { background: #2a3050; }
+    .lb-table tbody tr:nth-child(1) td { background: rgba(255,215,0,0.12); }
+    .lb-table tbody tr:nth-child(2) td { background: rgba(192,192,192,0.08); }
+    .lb-table tbody tr:nth-child(3) td { background: rgba(205,127,50,0.08); }
+
+    .rank-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 30px; height: 30px; border-radius: 50%;
+      font-weight: 900; font-size: 13px;
+    }
+    .rank-1 { background: #ffd700; color: #7b5800; box-shadow: 0 0 12px rgba(255,215,0,0.6); }
+    .rank-2 { background: #c0c0c0; color: #2a2a2a; }
+    .rank-3 { background: #cd7f32; color: #fff; }
+    .rank-other { background: #3a4060; color: #ccc; }
+
+    .pct-pill {
+      display: inline-block; padding: 4px 12px;
+      border-radius: 20px; font-weight: 800; font-size: 12px;
+    }
+    .pct-high { background: rgba(0,217,126,0.2); color: #00d97e; border: 1px solid #00d97e; }
+    .pct-mid  { background: rgba(255,107,0,0.2); color: #ff6b00; border: 1px solid #ff6b00; }
+    .pct-low  { background: rgba(255,71,87,0.2); color: #ff4757; border: 1px solid #ff4757; }
+
+    .empty-lb { text-align: center; padding: 40px 20px; color: #666; font-size: 15px; }
+    .empty-lb .empty-icon { font-size: 44px; margin-bottom: 12px; }
+
+    .lb-footer { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+    .lb-back-btn {
+      background: linear-gradient(135deg, #ffd700, #ff6b00);
+      color: #1a0033;
+      border: none; border-radius: 12px;
+      padding: 12px 36px; font-size: 14px;
+      font-weight: 900; cursor: pointer; transition: all 0.2s;
+      text-transform: uppercase; letter-spacing: 1px;
+    }
+    .lb-back-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(255,107,0,0.5); }
+    .lb-refresh-btn {
+      background: transparent; color: #ffd700;
+      border: 2px solid #ffd700; border-radius: 10px;
+      padding: 10px 20px; font-size: 13px;
+      font-weight: 700; cursor: pointer; transition: all 0.2s;
+      text-transform: uppercase; letter-spacing: 1px;
+    }
+    .lb-refresh-btn:hover { background: rgba(255,215,0,0.1); }
+
+    .saving-toast {
+      position: fixed; bottom: 24px; right: 24px;
+      background: linear-gradient(135deg, #c30010, #8b0000);
+      border: 1px solid #ffd700;
+      color: white; border-radius: 10px;
+      padding: 14px 22px; font-size: 14px; font-weight: 700;
+      box-shadow: 0 6px 22px rgba(0,0,0,0.6);
+      display: none; z-index: 999;
+    }
+    .saving-toast.show { display: block; }
+
+    @media (max-width: 600px) {
+      .score-display { flex-direction: column; gap: 14px; }
+      .score-display .big-pct { border-left: none; border-top: 2px solid rgba(255,215,0,0.5); padding-left: 0; padding-top: 14px; }
+      .header h1 { font-size: 22px; }
+      .question-text { font-size: 17px; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- START SCREEN -->
+  <div id="start-screen" class="screen active">
+    <div class="start-icon">⏱️</div>
+    <h2>Timekeeping Showdown</h2>
+    <div class="subtitle">⚡ HR Talks Edition ⚡</div>
+    <p class="intro">A 10-question rapid-fire challenge based on the Payruler ESS Reference Guide. Prove you're the timekeeping expert of the HR Team. <strong style="color:#ffd700">20 seconds per question. No second chances.</strong></p>
+    <div class="start-stats">
+      <div class="stat-box"><div class="num">10</div><div class="lbl">Questions</div></div>
+      <div class="stat-box"><div class="num">20s</div><div class="lbl">Per Question</div></div>
+      <div class="stat-box"><div class="num">🔥</div><div class="lbl">Pressure</div></div>
+    </div>
+    <div class="pressure-note">⚠️ The timer starts the moment you hit START. No going back. Answer fast — every second counts toward your rank.</div>
+    <div class="name-input-wrap">
+      <label for="player-name">👤 Enter your name to claim the throne</label>
+      <input type="text" id="player-name" placeholder="Type your name…" maxlength="30" />
+    </div>
+    <button class="start-btn" onclick="startQuiz()">🚀 Start Challenge</button>
+    <button class="leaderboard-btn" onclick="showLeaderboard('start')">🏆 Leaderboard</button>
+  </div>
+
+  <!-- QUIZ SCREEN -->
+  <div id="quiz-screen">
+    <div class="header">
+      <div class="badge">🔥 Live Showdown</div>
+      <h1>Timekeeping Trivia</h1>
+      <p>Pick fast. Pick smart. Pick correctly.</p>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span id="q-label">Question 1 of 10</span>
+        <span id="score-label">Score: 0</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progress-fill" style="width:10%"></div>
+      </div>
+    </div>
+    <div class="timer-wrap">
+      <span class="timer-icon" id="timer-icon">⏱️</span>
+      <div class="timer-bar-bg">
+        <div class="timer-bar-fill" id="timer-fill" style="width:100%"></div>
+      </div>
+      <div class="timer-count" id="timer-count">20</div>
+    </div>
+    <div class="question-area">
+      <div class="question-number" id="q-num">QUESTION 1</div>
+      <div class="question-text" id="q-text"></div>
+    </div>
+    <div class="choices" id="choices"></div>
+    <div class="feedback" id="feedback">
+      <span class="icon" id="fb-icon"></span>
+      <span id="fb-text"></span>
+    </div>
+    <div class="next-wrap" id="next-wrap">
+      <button class="next-btn" id="next-btn" onclick="nextQuestion()">Next →</button>
+    </div>
+    <div class="score-strip">
+      <span>✅ Correct: <b id="strip-correct">0</b></span>
+      <span>❌ Wrong: <b id="strip-wrong">0</b></span>
+      <span>⏭ Skipped: <b id="strip-skipped">0</b></span>
+    </div>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div id="result-screen" class="screen">
+    <div class="result-icon" id="result-icon">🏆</div>
+    <h2 id="result-title">Quiz Complete!</h2>
+    <div class="result-sub" id="result-sub">Here's how you did:</div>
+    <div class="score-display">
+      <div>
+        <div class="big-num"   id="res-score">0</div>
+        <div class="big-denom" id="res-denom">out of 10</div>
+      </div>
+      <div class="big-pct" id="res-pct">0%</div>
+    </div>
+    <div class="result-breakdown">
+      <div class="breakdown-box correct-box"><div class="b-num" id="res-correct">0</div><div class="b-lbl">✅ Correct</div></div>
+      <div class="breakdown-box wrong-box"><div class="b-num" id="res-wrong">0</div><div class="b-lbl">❌ Wrong / Skipped</div></div>
+    </div>
+    <div class="grade-bar"><div class="grade-bar-fill" id="grade-fill" style="width:0%"></div></div>
+    <div class="grade-label" id="grade-label"></div>
+    <div class="result-msg" id="result-msg"></div>
+    <div class="result-btns">
+      <button class="restart-btn" onclick="restartQuiz()">🔄 Play Again</button>
+      <button class="view-lb-btn" onclick="showLeaderboard('result')">🏆 View Leaderboard</button>
+    </div>
+  </div>
+
+  <!-- LEADERBOARD SCREEN -->
+  <div id="leaderboard-screen" class="screen">
+    <h2>🏆 Hall of Fame</h2>
+    <div class="lb-sub" id="lb-sub">Top timekeeping champions of the HR Team</div>
+    <div id="lb-content"></div>
+    <div class="lb-footer">
+      <button class="lb-back-btn"    onclick="backFromLeaderboard()">← Back</button>
+      <button class="lb-refresh-btn" onclick="loadLeaderboard()">🔄 Refresh</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="saving-toast" id="saving-toast">⏳ Saving your score…</div>
+
+<script>
+  // ============================================================
+  //  ⚙️  CONFIGURATION — paste your Google Apps Script Web App URL here
+  //  Leave as-is for local-only leaderboard
+  // ============================================================
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwVK4yVTdtk_RASyOBzXmR0l6Ma2-6a_gv3ym9SEtBhpe-SaCghKiflF0gJFhj1v70/exec';
+  // ============================================================
+
+  const questions = [
+    {
+      q: "Under Payroll Adjustment in Payruler ESS, which THREE categories can employees file corrections or late applications for?",
+      choices: [
+        "Attendance, Leave, Overtime",
+        "Tardiness, Absence, Holiday",
+        "Payslip, Loan, Bonus",
+        "Time-in, Time-out, Break"
+      ],
+      answer: 0,
+      explanation: "Payroll Adjustment covers three categories: ATTENDANCE (for invalid/absent corrections), LEAVE (for late filing), and OVERTIME (for unfiled OT)."
+    },
+    {
+      q: "When filing OT that reaches Night Differential, does the employee need to WAIT for the Change Shift approval before filing the Overtime application?",
+      choices: [
+        "Yes, Change Shift must be approved first",
+        "No, both can be filed at the same time",
+        "Yes, but only if OT is more than 4 hours",
+        "Only for INFOSOFT employees"
+      ],
+      answer: 1,
+      explanation: "PRO TIP: No need to wait. You can file Change Shift and Overtime at the same time — it saves time for both you and your approvers."
+    },
+    {
+      q: "What is the password format used to open a downloaded payslip PDF?",
+      choices: [
+        "Employee ID + Last Name",
+        "Birthdate (mmddyyyy) + First 2 digits of Employee ID",
+        "Birthdate (ddmmyyyy) + Last 2 digits of Employee ID",
+        "Last Name + Birth Year"
+      ],
+      answer: 2,
+      explanation: "The payslip password is your BIRTHDATE in ddmmyyyy format followed by the LAST 2 DIGITS of your Employee ID."
+    },
+    {
+      q: "True or False: The 'No Bio' application is the replacement for the old Dispute Form, used for INVALID logs, missed time-outs, and similar issues.",
+      choices: [
+        "True",
+        "False",
+        "Only true for OT-related issues",
+        "Only true for INFOSOFT employees"
+      ],
+      answer: 0,
+      explanation: "TRUE. No Bio replaces the old Dispute Form and is used to address invalid logs, incorrect/missed time-outs, and similar timekeeping corrections."
+    },
+    {
+      q: "For OFFSET, what is the rule on rendered overtime hours?",
+      choices: [
+        "Exactly 6 hours = half day, 12 hours = whole day",
+        "Minimum 2 hours required regardless of day type",
+        "4 hours = half day, 8 hours = whole day; excess is NOT counted",
+        "Any number of OT hours can be converted"
+      ],
+      answer: 2,
+      explanation: "Offset conversion is strict: 4 HOURS for half-day and 8 HOURS for whole-day. Any excess hours shall NOT be considered as offset."
+    },
+    {
+      q: "If an employee rendered OT on March 4–5, 2025, until when can the offset be claimed?",
+      choices: [
+        "Until March 31, 2025 (end of same month)",
+        "Until April 30, 2025 (end of the following month)",
+        "Within 15 days of rendering OT",
+        "Until June 30, 2025 (end of the quarter)"
+      ],
+      answer: 1,
+      explanation: "Offset can be filed or claimed until the end of the FOLLOWING MONTH of the overtime rendered. OT in March → claimable until April 30."
+    },
+    {
+      q: "What is the MINIMUM accepted overtime hours, and what increments are valid?",
+      choices: [
+        "30 minutes minimum, any increment is fine",
+        "1 hour minimum, only whole or half-hour increments (1, 1.5, 2, 2.5…)",
+        "2 hours minimum, in 15-minute increments",
+        "1 hour minimum, any decimal value accepted"
+      ],
+      answer: 1,
+      explanation: "Minimum OT is 1 HOUR. Only whole or half-hour increments are accepted (1hr, 1.5hr, 2hr, 2.5hr, etc.). Values like 1.45 or 1.66 will be DECLINED."
+    },
+    {
+      q: "What should an employee do if they FORGOT to clock out at the end of their OT?",
+      choices: [
+        "Wait for the next cut-off and let HR fix it",
+        "Apply for No Bio first to correct the time-out",
+        "File a new Overtime application from scratch",
+        "Send an email to their supervisor only"
+      ],
+      answer: 1,
+      explanation: "Apply for NO BIO first to correct the missing/incorrect time-out. This ensures the system captures the correct Actual OT hours before filing the OT application."
+    },
+    {
+      q: "If OT is rendered RIGHT AFTER the shift, what is the rule on the dinner break?",
+      choices: [
+        "Dinner break is paid as part of OT",
+        "No deduction since the OT is voluntary",
+        "The 1-hour dinner break should be DEDUCTED from the OT hours",
+        "Deduct only 30 minutes for snack time"
+      ],
+      answer: 2,
+      explanation: "If OT is right after the shift, the 1-hour dinner break should be deducted. (For broken/staggered OT or OT that starts hours after the shift, no deduction is needed.)"
+    },
+    {
+      q: "Before applying for No Bio, where should an employee FIRST check for incorrect logs (INVALID, ABSENT, LATE, UNDERTIME)?",
+      choices: [
+        "Payslip module",
+        "Personal Attendance",
+        "Leave Balance",
+        "Approver Dashboard"
+      ],
+      answer: 1,
+      explanation: "Always check PERSONAL ATTENDANCE first. Look out for remarks like INVALID, ABSENT, LATE, or UNDERTIME — these signal which dates need a No Bio correction."
+    }
+  ];
+
+  let currentQ=0, score=0, correct=0, wrong=0, skipped=0;
+  let timer=null, timeLeft=20, answered=false;
+  let playerName='', lbReturnScreen='start';
+
+  const isConfigured = () => SCRIPT_URL && SCRIPT_URL !== 'YOUR_APPS_SCRIPT_URL_HERE';
+
+  // ── LOCAL LEADERBOARD (fallback when no Apps Script URL) ─────
+  function getLocalScores() {
+    try { return JSON.parse(localStorage.getItem('hrTriviaScores') || '[]'); }
+    catch { return []; }
+  }
+  function saveLocalScore(entry) {
+    const scores = getLocalScores();
+    scores.push(entry);
+    scores.sort((a,b) => b.score - a.score || a.timestamp - b.timestamp);
+    localStorage.setItem('hrTriviaScores', JSON.stringify(scores.slice(0, 50)));
+  }
+
+  // ── SCORE SAVING ─────────────────────────────────────────
+  function saveScore(name, sc, total, pct) {
+    const date = new Date().toLocaleString('en-PH', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+    const entry = { name, score: sc, total, pct, date, timestamp: Date.now() };
+
+    // Always save locally so leaderboard works offline
+    saveLocalScore(entry);
+
+    if (!isConfigured()) {
+      showToast('✅ Score saved locally!');
+      return;
+    }
+    showToast('⏳ Saving your score…');
+    const url = `${SCRIPT_URL}?action=save&name=${encodeURIComponent(name)}&score=${sc}&total=${total}&pct=${pct}&date=${encodeURIComponent(date)}`;
+    fetch(url)
+      .then(() => showToast('✅ Score saved!'))
+      .catch(() => showToast('⚠️ Saved locally only'));
+  }
+
+  // ── LEADERBOARD LOADING ──────────────────────────────────
+  function loadLeaderboard() {
+    const content = document.getElementById('lb-content');
+    if (!isConfigured()) {
+      const local = getLocalScores();
+      if (local.length === 0) {
+        content.innerHTML = `<div class="empty-lb"><div class="empty-icon">🏆</div><p>No scores yet.<br>Be the first champion!</p></div>
+        <div class="lb-no-url"><strong>💡 Tip — Enable Shared Leaderboard</strong>To rank players across multiple devices, paste a Google Apps Script URL into the <code>SCRIPT_URL</code> variable in this HTML file. Otherwise, scores are stored locally on this browser.</div>`;
+        return;
+      }
+      renderLeaderboard(local);
+      content.insertAdjacentHTML('beforeend', `<div class="lb-no-url"><strong>💡 Local Leaderboard Mode</strong>Scores are stored on this browser only. For a shared leaderboard across all players, set up Google Apps Script (instructions in the HTML file).</div>`);
+      return;
+    }
+    content.innerHTML = `<div class="lb-loading"><div class="spinner"></div>Loading scores…</div>`;
+    fetch(`${SCRIPT_URL}?action=get`)
+      .then(r => r.json())
+      .then(data => renderLeaderboard(data))
+      .catch(() => {
+        content.innerHTML = `<div class="lb-no-url"><strong>⚠️ Could not load shared scores</strong>Showing local scores instead.</div>`;
+        renderLeaderboard(getLocalScores());
+      });
+  }
+
+  function renderLeaderboard(data) {
+    const content = document.getElementById('lb-content');
+    if (!data || data.length === 0) {
+      content.innerHTML = `<div class="empty-lb"><div class="empty-icon">🏆</div><p>No scores yet.<br>Play the quiz to appear here!</p></div>`;
+      return;
+    }
+    const medals = ['rank-1','rank-2','rank-3'];
+    const rows = data.map((e, i) => {
+      const rankClass = i < 3 ? medals[i] : 'rank-other';
+      const rankLabel = i===0 ? '🥇' : i===1 ? '🥈' : i===2 ? '🥉' : i+1;
+      const pctClass  = e.pct >= 70 ? 'pct-high' : e.pct >= 50 ? 'pct-mid' : 'pct-low';
+      return `<tr>
+        <td><span class="rank-badge ${rankClass}">${rankLabel}</span></td>
+        <td><strong>${e.name}</strong></td>
+        <td>${e.score} / ${e.total}</td>
+        <td><span class="pct-pill ${pctClass}">${e.pct}%</span></td>
+        <td style="color:#888;font-size:12px">${e.date}</td>
+      </tr>`;
+    }).join('');
+
+    content.innerHTML = `
+      <div class="lb-table-wrap">
+        <table class="lb-table">
+          <thead><tr><th>Rank</th><th>Player</th><th>Score</th><th>%</th><th>Date</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>`;
+  }
+
+  // ── NAVIGATION ───────────────────────────────────────────
+  function showLeaderboard(from) {
+    lbReturnScreen = from;
+    document.getElementById(from === 'start' ? 'start-screen' : 'result-screen').classList.remove('active');
+    document.getElementById('leaderboard-screen').classList.add('active');
+    loadLeaderboard();
+  }
+
+  function backFromLeaderboard() {
+    document.getElementById('leaderboard-screen').classList.remove('active');
+    document.getElementById(lbReturnScreen === 'start' ? 'start-screen' : 'result-screen').classList.add('active');
+  }
+
+  // ── QUIZ FLOW ────────────────────────────────────────────
+  function startQuiz() {
+    playerName = document.getElementById('player-name').value.trim() || 'Anonymous';
+    document.getElementById('start-screen').classList.remove('active');
+    document.getElementById('quiz-screen').style.display = 'block';
+    currentQ=0; score=0; correct=0; wrong=0; skipped=0;
+    updateStrip();
+    loadQuestion();
+  }
+
+  function updateStrip() {
+    document.getElementById('strip-correct').textContent = correct;
+    document.getElementById('strip-wrong').textContent   = wrong;
+    document.getElementById('strip-skipped').textContent = skipped;
+  }
+
+  function loadQuestion() {
+    answered = false; timeLeft = 20;
+    const q = questions[currentQ];
+    document.getElementById('q-num').textContent    = `QUESTION ${currentQ+1}`;
+    document.getElementById('q-text').textContent   = q.q;
+    document.getElementById('q-label').textContent  = `Question ${currentQ+1} of ${questions.length}`;
+    document.getElementById('score-label').textContent = `Score: ${score}`;
+    document.getElementById('progress-fill').style.width = `${((currentQ+1)/questions.length)*100}%`;
+    document.getElementById('timer-count').textContent   = timeLeft;
+    document.getElementById('timer-count').classList.remove('urgent');
+    document.getElementById('timer-icon').classList.remove('urgent');
+    document.getElementById('timer-fill').style.width    = '100%';
+    document.getElementById('timer-fill').style.background = '#00d97e';
+    document.getElementById('feedback').style.display    = 'none';
+    document.getElementById('next-wrap').style.display   = 'none';
+    document.body.classList.remove('pressure-mode');
+
+    const letters = ['A','B','C','D'];
+    const choicesDiv = document.getElementById('choices');
+    choicesDiv.innerHTML = '';
+    q.choices.forEach((c, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'choice-btn';
+      btn.innerHTML = `<span class="choice-letter">${letters[i]}</span> <span>${c}</span>`;
+      btn.onclick   = () => selectAnswer(i);
+      choicesDiv.appendChild(btn);
+    });
+    startTimer();
+  }
+
+  function startTimer() {
+    clearInterval(timer);
+    timer = setInterval(() => {
+      timeLeft--;
+      document.getElementById('timer-count').textContent = timeLeft;
+      const pct = (timeLeft/20)*100;
+      document.getElementById('timer-fill').style.width = pct+'%';
+      if (pct < 35) {
+        document.getElementById('timer-fill').style.background = '#ff4757';
+        document.getElementById('timer-count').classList.add('urgent');
+        document.getElementById('timer-icon').classList.add('urgent');
+        if (timeLeft <= 3 && !answered) document.body.classList.add('pressure-mode');
+      } else if (pct < 65) {
+        document.getElementById('timer-fill').style.background = '#ff6b00';
+      }
+      if (timeLeft<=0) { clearInterval(timer); if(!answered) timeUp(); }
+    }, 1000);
+  }
+
+  function timeUp() {
+    answered=true; skipped++;
+    document.body.classList.remove('pressure-mode');
+    const btns = document.querySelectorAll('.choice-btn');
+    btns.forEach(b=>b.disabled=true);
+    btns[questions[currentQ].answer].classList.add('correct');
+    showFeedback(false, `⏰ Time's up! The correct answer was: ${questions[currentQ].choices[questions[currentQ].answer]}. ${questions[currentQ].explanation}`);
+    updateStrip(); showNextBtn();
+  }
+
+  function selectAnswer(idx) {
+    if (answered) return;
+    answered=true; clearInterval(timer);
+    document.body.classList.remove('pressure-mode');
+    const q    = questions[currentQ];
+    const btns = document.querySelectorAll('.choice-btn');
+    btns.forEach(b=>b.disabled=true);
+    if (idx===q.answer) {
+      score++; correct++;
+      btns[idx].classList.add('correct');
+      showFeedback(true, `✅ Correct! ${q.explanation}`);
+    } else {
+      wrong++;
+      btns[idx].classList.add('wrong');
+      btns[q.answer].classList.add('correct');
+      showFeedback(false, `❌ Incorrect. ${q.explanation}`);
+    }
+    document.getElementById('score-label').textContent = `Score: ${score}`;
+    updateStrip(); showNextBtn();
+  }
+
+  function showFeedback(ok, text) {
+    const fb = document.getElementById('feedback');
+    fb.className = 'feedback ' + (ok ? 'correct' : 'wrong');
+    document.getElementById('fb-icon').textContent = ok ? '💡' : '📖';
+    document.getElementById('fb-text').textContent = text;
+    fb.style.display = 'flex';
+  }
+
+  function showNextBtn() {
+    document.getElementById('next-wrap').style.display = 'flex';
+    document.getElementById('next-btn').textContent =
+      currentQ < questions.length-1 ? 'Next →' : 'See Results 🏆';
+  }
+
+  function nextQuestion() {
+    currentQ++;
+    if (currentQ < questions.length) loadQuestion();
+    else showResults();
+  }
+
+  function showResults() {
+    clearInterval(timer);
+    document.body.classList.remove('pressure-mode');
+    document.getElementById('quiz-screen').style.display = 'none';
+
+    const pct = Math.round((score/questions.length)*100);
+    document.getElementById('res-score').textContent   = score;
+    document.getElementById('res-denom').textContent   = `out of ${questions.length}`;
+    document.getElementById('res-pct').textContent     = pct+'%';
+    document.getElementById('res-correct').textContent = correct;
+    document.getElementById('res-wrong').textContent   = wrong+skipped;
+
+    let icon, title, msg, grade;
+    if      (pct>=90) { icon='🏆'; title='Timekeeping Legend!';  grade='Elite — Master of Payruler'; msg='Flawless or near-flawless! You set the standard for the rest of the HR team.'; }
+    else if (pct>=70) { icon='🌟'; title='Great Performance!';   grade='Pro — Strong HR Knowledge'; msg='Solid command of timekeeping rules. A bit more review on edge cases and you\'ll reach legend status!'; }
+    else if (pct>=50) { icon='👍'; title='Good Effort!';         grade='Passing — Keep Reviewing';  msg='You\'ve got the basics. Time to re-read the ESS Reference Guide and aim higher next round.'; }
+    else              { icon='📚'; title='Back to the Guide!';   grade='Needs Improvement';         msg='Don\'t stress — review the Payruler ESS Reference Guide and challenge yourself again. You\'ve got this!'; }
+
+    document.getElementById('result-icon').textContent  = icon;
+    document.getElementById('result-title').textContent = title;
+    document.getElementById('result-sub').textContent   = `${playerName} scored ${score} out of ${questions.length}`;
+    document.getElementById('grade-label').textContent  = grade;
+    document.getElementById('result-msg').textContent   = msg;
+    document.getElementById('result-screen').classList.add('active');
+    setTimeout(() => { document.getElementById('grade-fill').style.width = pct+'%'; }, 300);
+
+    saveScore(playerName, score, questions.length, pct);
+  }
+
+  function restartQuiz() {
+    document.getElementById('result-screen').classList.remove('active');
+    document.getElementById('grade-fill').style.width = '0%';
+    currentQ=0; score=0; correct=0; wrong=0; skipped=0;
+    updateStrip();
+    document.getElementById('quiz-screen').style.display = 'block';
+    loadQuestion();
+  }
+
+  let toastTimer = null;
+  function showToast(msg) {
+    const t = document.getElementById('saving-toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+  }
+</script>
+</body>
+</html>
